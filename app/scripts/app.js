@@ -1,1 +1,1 @@
-var angularAppModule = angular.module('angularAppModule', []);
+var angularAppModule = angular.module('angularAppModule', ['ui-router']);
