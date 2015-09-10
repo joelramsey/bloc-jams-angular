@@ -1,12 +1,13 @@
-var angularAppModule = angular.module('angularAppModule', ['ui-router']);
+var blocJamsAngular = angular.module('blocJamsAngular', ['ui.router']);
 
-angularAppModule.config(function ($stateprovider, $locationProvider) {
+
+blocJamsAngular.config(function ($stateProvider, $locationProvider) {
     $locationProvider.html5Mode({
         enabled: true,
         requireBase: false
     });
 
-    $stateprovider
+    $stateProvider
         .state('album', {
             url: '/album',
             controller: 'Album.controller',
@@ -21,5 +22,14 @@ angularAppModule.config(function ($stateprovider, $locationProvider) {
             url: 'landing',
             controller: 'Landing.controller',
             templateUrl: '/templates/landing.html'
+
         })
+
+    //$urlRouterProvider.otherwise("/landing");
+
+});
+
+
+blocJamsAngular.controller('Landing.controller', function () {
+
 });
