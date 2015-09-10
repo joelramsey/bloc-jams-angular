@@ -5,4 +5,21 @@ angularAppModule.config(function ($stateprovider, $locationProvider) {
         enabled: true,
         requireBase: false
     });
+
+    $stateprovider
+        .state('album', {
+            url: '/album',
+            controller: 'Album.controller',
+            templateUrl: '/templates/album.html'
+        })
+        .state('collection', {
+            url: '/collection',
+            controller: 'Collection.controller',
+            templateUrl: '/templates/collection.html'
+        })
+        .state('landing', {
+            url: 'landing',
+            controller: 'Landing.controller',
+            templateUrl: '/templates/landing.html'
+        })
 });
