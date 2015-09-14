@@ -1,14 +1,16 @@
-<body class="collection">
-    <nav class="navbar"> <!-- nav bar -->
-        <a href="index.html" class="logo">
-            <img src="assets/images/bloc_jams_logo.png" alt="bloc jams logo">
-        </a>
-        <div class="links-container">
-            <a href="collection.html" class="navbar-link">collection</a>
-        </div>
-    </nav>
+<div ng-controller="Collection.controller">
     <section class="album-covers container">
         <div class="clearfix">
+            <div class="collection-album-container column fourth" ng-repeat="album in albums">
+                <img src="{{album.albumArtUrl}}" />
+                <div class="collection-album-info caption">
+                    <p>
+                        <a class="album-name" ui-sref="album">{{album.name}}</a>
+                        <br /> {{ album.songs.length }} songs
+                        <br />
+                    </p>
+                </div>
+            </div>
         </div>
     </section>
-</body>
+</div>

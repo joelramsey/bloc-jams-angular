@@ -30,6 +30,14 @@ blocJamsAngular.config(function ($stateProvider, $locationProvider) {
 });
 
 
-blocJamsAngular.controller('Landing.controller', function () {
+blocJamsAngular.controller('Landing.controller', function ($scope) {
+    $scope.welcome = 'Turn the music up!';
+});
 
+blocJamsAngular.controller('Album.controller', function ($scope) {
+    $scope.albumPicasso = albumPicasso;
+});
+
+blocJamsAngular.controller('Collection.controller', function ($scope) {
+    $scope.albums = [albumPicasso, albumMarconi, albumRamsey];
 });
