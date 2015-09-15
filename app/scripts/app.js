@@ -1,7 +1,7 @@
 var blocJamsAngular = angular.module('blocJamsAngular', ['ui.router']);
 
 
-blocJamsAngular.config(function ($stateProvider, $locationProvider) {
+blocJamsAngular.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $locationProvider.html5Mode({
         enabled: true,
         requireBase: false
@@ -19,13 +19,13 @@ blocJamsAngular.config(function ($stateProvider, $locationProvider) {
             templateUrl: '/templates/collection.html'
         })
         .state('landing', {
-            url: 'landing',
+            url: '/landing',
             controller: 'Landing.controller',
             templateUrl: '/templates/landing.html'
 
         })
 
-    //$urlRouterProvider.otherwise("/landing");
+    $urlRouterProvider.otherwise("/landing");
 
 });
 
