@@ -1,60 +1,58 @@
-
-    <main class="album-view container narrow">
-        <section class="clearfix">
-            <div class="column half">
-                <img src="{{albumPicasso.albumArtUrl}}" class="album-cover-art">
-            </div>
-            <div class="album-view-details column half">
-                <h2 class="album-view-title">{{albumPicasso.name}}</h2>
-                <h3 class="album-view-artist">{{albumPicasso.artist}}</h3>
-                <h5 class="album-view-release-info">{{albumPicasso.year}} {{albumPicasso.label}}</h5>
-            </div>
-        </section>
-        <table class="album-view-song-list">
-            <tr class="album-view-song-item" ng-repeat="song in albumPicasso.songs">
-                <td class="song-item-number" data-song-number="{{$index + 1}}">
-                    {{$index + 1}}
-                </td>
-                <td class="song-item-title">{{song.name}}</td>
-                <td class="song-item-duration">{{song.duration}}</td>
-            </tr>
-        </table>
-    </main>
-    <section class="player-bar">
-        <div class="container">
-            <div class="player-bar-control-group left-controls">
-                <a class="previous">
-                    <span class="ion-skip-backward"></span>
-                </a>
-                <a class="play-pause">
-                    <span class="ion-play"></span>
-                </a>
-                <a class="next">
-                    <span class="ion-skip-forward"></span>
-                </a>
-            </div>
-            <div class="player-bar-control-group currently-playing">
-                <h2 class="song-name"></h2>
-                <h2 class="artist-song-mobile"></h2>
-                <div class="seek-control">
-                    <div class="seek-bar">
-                        <div class="fill"></div>
-                        <div class="thumb"></div>
-                    </div>
-                    <div class="current-time"></div>
-                    <div class="total-time"></div>
+<main class="album-view container narrow">
+    <section class="clearfix">
+        <div class="column half">
+            <img src="{{albumPicasso.albumArtUrl}}" class="album-cover-art">
+        </div>
+        <div class="album-view-details column half">
+            <h2 class="album-view-title">{{albumPicasso.name}}</h2>
+            <h3 class="album-view-artist">{{albumPicasso.artist}}</h3>
+            <h5 class="album-view-release-info">{{albumPicasso.year}} {{albumPicasso.label}}</h5>
+        </div>
+    </section>
+    <table class="album-view-song-list">
+        <tr class="album-view-song-item" ng-repeat="song in albumPicasso.songs">
+            <td class="song-item-number" data-song-number="{{$index + 1}}">
+                {{$index + 1}}
+            </td>
+            <td class="song-item-title">{{song.name}}</td>
+            <td class="song-item-duration">{{song.duration}}</td>
+        </tr>
+    </table>
+</main>
+<section class="player-bar">
+    <div class="container">
+        <div class="player-bar-control-group left-controls">
+            <a ng-click="previous()" class="previous">
+                <span class="ion-skip-backward"></span>
+            </a>
+            <a ng-click="play()" class="play-pause">
+                <span class="ion-play"></span>
+            </a>
+            <a ng-click="next()" class="next">
+                <span class="ion-skip-forward"></span>
+            </a>
+        </div>
+        <div class="player-bar-control-group currently-playing">
+            <h2 class="song-name"></h2>
+            <h2 class="artist-song-mobile"></h2>
+            <div class="seek-control">
+                <div class="seek-bar">
+                    <div class="fill"></div>
+                    <div class="thumb"></div>
                 </div>
-                <h3 class="artist-name"></h3>
+                <div class="current-time"></div>
+                <div class="total-time"></div>
             </div>
-            <div class="player-bar-control-group right-controls">
-                <div class="volume">
-                    <span class="ion-volume-high"></span>
-                    <div class="seek-bar">
-                        <div class="fill"></div>
-                        <div class="thumb"></div>
-                    </div>
+            <h3 class="artist-name"></h3>
+        </div>
+        <div class="player-bar-control-group right-controls">
+            <div class="volume">
+                <span class="ion-volume-high"></span>
+                <div class="seek-bar">
+                    <div class="fill"></div>
+                    <div class="thumb"></div>
                 </div>
             </div>
         </div>
-    </section>
-
+    </div>
+</section>
