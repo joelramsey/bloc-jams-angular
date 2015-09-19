@@ -43,6 +43,13 @@ blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function ($s
     $scope.pause = function () {
         Player.pause();
     };
+    $scope.previous = function () {
+        Player.previous();
+    };
+    $scope.next = function () {
+        Player.next();
+    };
+    
 }]);
 
 blocJamsAngular.service('Player', function () {
@@ -54,6 +61,7 @@ blocJamsAngular.service('Player', function () {
         isPlaying: false,
         currentAlbum: null,
         currentSong: null,
+        currentSongFromAlbum: null,
         volume: 80,
         play: function () {
             if (currentSoundFile === null) {
@@ -87,25 +95,24 @@ blocJamsAngular.service('Player', function () {
                 preload: true
             });
         },
+        
+        getIndex: function (album, song) {
+            return album.songs.indexOf(song);    
+        },
 
         previous: function () {
-            var index = getIndex(this.currentAlbum, this.currentSong);
-            index--;
-            if (index < 0) {
-                index = this.currentAlbum.songs.length - 1;
-            }
-            var song = this.currentAlbum.songs[index];
-            this.setSong(this.currentAlbum, song);
+            
         },
         next: function () {
-            var index = getIndex(this.currentAlbum, this.currentSong);
-            index++;
-            if (index >= this.currentAlbum.songs.length) {
-                index = 0;
+            var currentSongIndex = this.getIndex(this.currentAlbum, this.currentSongFromAlbum);
+            currentSongIndex++;
+            if(currentSongIndex >= this.currentAlbum.songs.length) {
+                currentSongIndex = 0;
             }
-            var song = this.currentAlbum.songs[index];
-            this.setSong(this.currentAlbum, song);
+            this.setSong(currentSongIndex + 1);
+            currentSoundFile.play();
         },
+        
         getTimePos: function () {
             if (currentSoundFile) {
                 currentSoundFile.bind('timeupdate', function () {
