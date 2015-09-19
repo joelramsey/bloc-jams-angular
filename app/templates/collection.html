@@ -1,15 +1,14 @@
-
-    <section class="album-covers container">
-        <div class="clearfix">
-            <div class="collection-album-container column fourth" ng-repeat="album in albums">
-                <img src="{{album.albumArtUrl}}" />
-                <div class="collection-album-info caption">
-                    <p>
-                        <a class="album-name" ui-sref="album">{{album.name}}</a>
-                        <br /> {{ album.songs.length }} songs
-                        <br />
-                    </p>
-                </div>
+<section class="album-covers container">
+    <div class="clearfix">
+        <div class="collection-album-container column fourth" ng-repeat="album in albums track by $index">
+            <img src="{{album.albumArtUrl}}" />
+            <div class="collection-album-info caption">
+                <p>
+                    <a class="album-name" ui-sref="album">{{album.name}}</a>
+                    <br /> {{ album.songs.length }} songs
+                    <br />
+                </p>
             </div>
         </div>
-    </section>
+    </div>
+</section>

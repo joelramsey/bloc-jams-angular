@@ -8,27 +8,27 @@ var albumPicasso = {
         {
             name: 'Blue',
             length: '2:41',
-            audioUrl: 'assets/music/blue'
+            audioUrl: '/assets/music/blue'
         },
         {
             name: 'Green',
             length: '1:43',
-            audioUrl: 'assets/music/green'
+            audioUrl: '/assets/music/green'
         },
         {
             name: 'Red',
             length: '4:28',
-            audioUrl: 'assets/music/red'
+            audioUrl: '/assets/music/red'
         },
         {
             name: 'Pink',
             length: '2:33',
-            audioUrl: 'assets/music/pink'
+            audioUrl: '/assets/music/pink'
         },
         {
             name: 'Magenta',
             length: '6:14',
-            audioUrl: 'assets/music/magenta'
+            audioUrl: '/assets/music/magenta'
         }
      ]
 };
