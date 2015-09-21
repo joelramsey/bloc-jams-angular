@@ -1,43 +1,33 @@
 <main class="album-view container narrow">
     <section class="clearfix">
         <div class="column half">
-            <img src="{{album.albumArtUrl}}" class="album-cover-art">
+            <img ng-src="{{ currentAlbum.albumArtUrl }}" class="album-cover-art">
         </div>
         <div class="album-view-details column half">
-            <h2 class="album-view-title">{{album.name}}</h2>
-            <h3 class="album-view-artist">{{album.artist}}</h3>
-            <h5 class="album-view-release-info">{{album.year}} {{album.label}}</h5>
+            <h2 class="album-view-title">{{ currentAlbum.name }}</h2>
+            <h3 class="album-view-artist">{{ currentAlbum.artist }}</h3>
+            <h5 class="album-view-release-info">{{ currentAlbum.label }}</h5>
         </div>
     </section>
-    <table class="album-view-song-list">
-        <tr class="album-view-song-item" ng-repeat="song in album.songs">
-            <td class="song-item-number" data-song-number="{{$index}}">
-                {{$index + 1}}
-            </td>
-            <td class="song-item-title">{{song.name}}</td>
-            <td class="song-item-duration">{{song.length}}</td>
+    <table class="album-view-song-list" ng-repeat="song in currentAlbum.songs">
+        <tr class="album-view-song-item">
+            <td class="song-item-number" data-song-number="{{ $index+1 }}" ng-click="playPause($index)">{{ $index+1 }}</td>
+            <td class="song-item-title">{{ song.name }}</td>
+            <td class="song-item-duration">{{ song.length }}</td>
         </tr>
     </table>
 </main>
 <section class="player-bar">
     <div class="container">
         <div class="player-bar-control-group left-controls">
-            <a ng-click="previous()" class="previous">
+            <a class="previous" ng-click="previousSong()">
                 <span class="ion-skip-backward"></span>
             </a>
-
-
-            <a ng-click="play()" class="play-pause">
-                <span class="ion-play"></span>
+            <a class="play-pause" ng-click="playSong()">
+                <span class="ion-play" ng-show="!isPlaying"></span>
+                <span class="ion-pause" ng-show="isPlaying"></span>
             </a>
-
-
-            <a ng-click="pause()" class="play-pause">
-                <span class="ion-pause"></span>
-            </a>
-
-
-            <a ng-click="next()" class="next">
+            <a class="next" ng-click="nextSong()">
                 <span class="ion-skip-forward"></span>
             </a>
         </div>
@@ -49,8 +39,8 @@
                     <div class="fill"></div>
                     <div class="thumb"></div>
                 </div>
-                <div class="current-time"></div>
-                <div class="total-time"></div>
+                <div class="current-time">{{ currentSongTime }}</div>
+                <div class="total-time"> {{ currentSongInAlbum.length }}</div>
             </div>
             <h3 class="artist-name"></h3>
         </div>
