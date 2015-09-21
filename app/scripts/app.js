@@ -36,7 +36,7 @@ blocJamsAngular.controller('Collection.controller', ['$scope', function ($scope)
 
 blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function ($scope, Player) {
     $scope.album = albumPicasso;
-    Player.setAlbum(albumPicasso);
+        Player.setCurrentAlbum(albumPicasso);
     $scope.play = function () {
         Player.play();
     };
@@ -53,9 +53,7 @@ blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function ($s
 }]);
 
 blocJamsAngular.service('Player', function () {
-    var getIndex = function (album, song) {
-        return album.songs.indexOf(song);
-    };
+    
     var currentSoundFile = null;
     return {
         isPlaying: false,
@@ -63,9 +61,10 @@ blocJamsAngular.service('Player', function () {
         currentSong: null,
         currentSongFromAlbum: null,
         volume: 80,
+        
         play: function () {
             if (currentSoundFile === null) {
-                this.setSong(this.currentAlbum.songs[0]);
+                this.setSong();
             }
             currentSoundFile.play();
             this.isPlaying = true;
@@ -80,17 +79,21 @@ blocJamsAngular.service('Player', function () {
             }
         },
 
-        setAlbum: function (album) {
+        setCurrentAlbum: function (album) {
             this.currentAlbum = album;
         },
 
-        setSong: function (song) {
+        setSong: function () {
             if (currentSoundFile) {
                 currentSoundFile.stop();
             }
+            
+            var song = 0;
+            
+            this.currentlyPlayingSongNumber = song;
+            this.currentSongFromAlbum = this.currentAlbum.songs[song];
 
-            this.currentSong = song;
-            currentSoundFile = new buzz.sound(song.audioUrl, {
+            currentSoundFile = new buzz.sound(this.currentSongFromAlbum.audioUrl, {
                 formats: ['mp3'],
                 preload: true
             });
@@ -102,15 +105,36 @@ blocJamsAngular.service('Player', function () {
 
         previous: function () {
             
+            var getLastSongNumber = function(index) {
+        
+            return index == 0 ? currentAlbum.songs.length : index;
+            };
+            var currentSongIndex = this.getIndex(this.currentAlbum, this.currentSongFromAlbum);
+            this.currentSongIndex--;
+            if(this.currentSongIndex < 0) {
+                currentSongIndex = currentAlbum.songs.length - 1;
+            }
+            
+            this.setSong(this.currentSongIndex + 1);
+            //this.currentSoundFile.play();
+            currentSoundFile.play()
+            
         },
         next: function () {
+            
+        var getLastSongNumber = function(index) {
+        
+            return index == 0 ? currentAlbum.songs.length : index;
+        };
             var currentSongIndex = this.getIndex(this.currentAlbum, this.currentSongFromAlbum);
-            currentSongIndex++;
-            if(currentSongIndex >= this.currentAlbum.songs.length) {
+            this.currentSongIndex++;
+            if(this.currentSongIndex >= this.currentAlbum.songs.length) {
                 currentSongIndex = 0;
             }
-            this.setSong(currentSongIndex + 1);
-            currentSoundFile.play();
+            
+            this.setSong(this.currentSongIndex + 1);
+            //this.currentSoundFile.play();
+            currentSoundFile.play()
         },
         
         getTimePos: function () {
