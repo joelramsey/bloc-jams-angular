@@ -48,7 +48,6 @@ blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function($sc
 
     $scope.playPause = function(songIndex){
         Player.isPlaying(songIndex);
-        Player.setSong(songIndex);
 
         if(Player.playing){
             Player.pause();
@@ -82,9 +81,9 @@ blocJamsAngular.factory('Player', function() {
     return {
         currentAlbum: albumPicasso,
         currentSoundFile: null,
-        currentSongIndex: -1,
+        currentSongIndex: 0,
         currentSongInAlbum: null,
-        currentVolume: 50,
+        currentVolume: 80,
         currentSongTime: 0,
         playing: false,
         pause: function() {
@@ -95,6 +94,9 @@ blocJamsAngular.factory('Player', function() {
         play: function(){
             this.playing = true;
             this.paused = false;
+            if (this.currentSoundFile === null){
+                this.setSong(this.currentSongIndex);
+            }
             this.currentSoundFile.play();
         },
         nextSong: function(){
@@ -117,7 +119,6 @@ blocJamsAngular.factory('Player', function() {
             if (this.currentSoundFile) {
                 this.currentSoundFile.stop();
             }
-
             this.currentSongIndex = songIndex;
             this.currentSoundFile = new buzz.sound(albumPicasso.songs[songIndex].audioUrl, {
                 formats: [ 'mp3' ],
