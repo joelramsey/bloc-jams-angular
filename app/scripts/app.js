@@ -42,7 +42,7 @@ blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function($sc
     $scope.currentSoundFile = Player.currentSoundFile;
     $scope.currentSongIndex = Player.currentSongIndex;
     $scope.isPlaying = Player.playing;
-    Player.trackTime();
+    
     $scope.currentSongTime = Player.currentSongTime;
     $scope.currentSongInAlbum = $scope.currentAlbum.songs[$scope.currentSongIndex];
 
@@ -78,6 +78,10 @@ blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function($sc
 }]);
 
 blocJamsAngular.factory('Player', function() {
+    var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
+    var pauseButtonTemplate = '<a class="album-song-button"><span class="ion-pause"></span></a>';
+    var playerBarPlayButton = '<span class="ion-play"></span>';
+    var playerBarPauseButton = '<span class="ion-pause"></span>';
     return {
         currentAlbum: albumPicasso,
         currentSoundFile: null,
@@ -91,6 +95,7 @@ blocJamsAngular.factory('Player', function() {
             this.paused = true;
             this.currentSoundFile.pause();
         },
+        
         play: function(){
             this.playing = true;
             this.paused = false;
@@ -98,6 +103,7 @@ blocJamsAngular.factory('Player', function() {
                 this.setSong(this.currentSongIndex);
             }
             this.currentSoundFile.play();
+            this.updatePlayerBarSong();
         },
         nextSong: function(){
             this.currentSongIndex ++;
@@ -106,6 +112,7 @@ blocJamsAngular.factory('Player', function() {
             }
             this.setSong(this.currentSongIndex);
             this.play();
+            this.updatePlayerBarSong();
         },
         previousSong: function(){
             this.currentSongIndex --;
@@ -114,12 +121,14 @@ blocJamsAngular.factory('Player', function() {
             }
             this.setSong(this.currentSongIndex);
             this.play();
+            this.updatePlayerBarSong()
         },
         setSong: function(songIndex){
             if (this.currentSoundFile) {
                 this.currentSoundFile.stop();
             }
             this.currentSongIndex = songIndex;
+            this.currentSongFromAlbum = this.currentAlbum.songs[songIndex];
             this.currentSoundFile = new buzz.sound(albumPicasso.songs[songIndex].audioUrl, {
                 formats: [ 'mp3' ],
                 preload: true
@@ -138,15 +147,48 @@ blocJamsAngular.factory('Player', function() {
                 this.currentSoundFile.setVolume(volume);
             }
         },
-        setTime: function(time) {
-            if (this.currentSoundFile) {
-                this.currentSoundFile.setTime(time);
-            }
+        
+        updatePlayerBarSong: function(){
+            $('.currently-playing .song-name').text(this.currentSongFromAlbum.name);
+            $('.currently-playing .artist-name').text(this.currentSongFromAlbum.artist);
+            $('.currently-playing .artist-song-mobile').text(this.currentSongFromAlbum.name + " - " + this.currentAlbum.artist);
+            
         },
-        trackTime: function() {
+        updateSeekBarWhileSongPlays:  function() {
+ 
             if (this.currentSoundFile) {
-                this.currentSongTime = this.currentSoundFile.getTime();
+       
+                this.currentSoundFile.bind('timeupdate', function timeUpdate(event) {
+
+                    var seekBarFillRatio = this.getTime() / this.getDuration();
+                    var $seekBar = $('.seek-control .seek-bar');
+
+                    this.updateSeekPercentage($seekBar, seekBarFillRatio);
+                    this.setCurrentTimeInPlayerBar(this.currentSoundFile.getTime());
+                    this.setTotalTimeInPlayerBar(this.currentSoundFile.getDuration());
+                });
             }
+ 
+        },
+        setCurrentTimeInPlayerBar: function(currentTime) {
+            $(".current-time").text(this.filterTimeCode(currentTime));
+         },
+
+        setTotalTimeInPlayerBar: function(totalTime) {
+            $(".total-time").text(this.filterTimeCode(totalTime));
+         },
+
+        filterTimeCode: function(timeInSeconds) {
+            var time = parseFloat(timeInSeconds);
+            var minutes = Math.floor(time/60);
+            var seconds = Math.floor(time - minutes * 60);
+            if (seconds >= 10) {
+                var formatTime = minutes + ":" + seconds;
+            } else {
+                var formatTime = minutes + ":0" + seconds;
+            }
+
+            return formatTime;
         }
     }
 });
