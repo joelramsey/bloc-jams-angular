@@ -32,17 +32,17 @@
             </a>
         </div>
         <div class="player-bar-control-group currently-playing">
-            <h2 class="song-name">{{ song.name }}</h2>
-            <h2 class="artist-song-mobile"> {{ song.name }} - {{ artist }}</h2>
+            <h2 class="song-name">{{ currentSongInAlbum.name }}</h2>
+            <h2 class="artist-song-mobile"> {{ currentSongInAlbum.name }} - {{ currentAlbum.artist }}</h2>
             <div class="seek-control">
                 <div class="seek-bar">
                     <div class="fill"></div>
                     <div class="thumb"></div>
                 </div>
-                <div class="current-time"></div>
-                <div class="total-time"></div>
+                <div class="current-time">{{ currentTime }}</div>
+                <div class="total-time">{{ totalSongtime }}</div>
             </div>
-            <h2 class="artist-name"></h2>
+            <h2 class="artist-name">{{ currentAlbum.artist }}</h2>
         </div>
         <div class="player-bar-control-group right-controls">
             <div class="volume">
