@@ -53,7 +53,8 @@ blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function ($s
             }
         } else {
             Player.setSong(songIndex);
-            // UPDATEADURATION
+            Player.getSongDuration()
+            $scope.currentSongTime();
             Player.play();
         }
     };
