@@ -42,13 +42,18 @@ blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function ($s
     $scope.currentSoundFile = Player.currentSoundFile;
     $scope.isPlaying = Player.playing;
     $scope.currentSongInAlbum = $scope.currentAlbum.songs[Player.currentSongIndex];
+    $scope.duration = null;
 
     $scope.playPause = function (songIndex) {
-        Player.isPlaying(songIndex);
-
-        if (Player.playing) {
-            Player.pause();
+        if (Player.currentSongIndex === songIndex) {
+            if (Player.playing) {
+                Player.pause();
+            } else {
+                Player.play();
+            }
         } else {
+            Player.setSong(songIndex);
+            // UPDATEADURATION
             Player.play();
         }
     };
@@ -59,26 +64,26 @@ blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function ($s
         Player.currentSoundFile.bind('timeupdate', function timeUpdate(event) {
             $scope.$apply(function () {
                 $scope.currentTime = Player.currentSoundFile.getTime();
+                $scope.duration = Player.getSongDuration();
             })
         });
     };
 
-    $scope.duration = Player.currentAlbum.songs[Player.currentSongIndex].length;
 
-    var hoverSong = null;
+    var hoverSongIndex = null;
 
-    $scope.hoverIn = function (song) {
-        hoverSong = song;
+    $scope.hoverIn = function (songIndex) {
+        hoverSongIndex = songIndex;
     };
 
     $scope.hoverOut = function () {
-        hoverSong = null;
+        hoverSongIndex = null;
     };
 
-    $scope.getState = function (song) {
-        if (Player.playing && song === Player.currentSongIndex) {
+    $scope.getState = function (songIndex) {
+        if (Player.playing && songIndex === Player.currentSongIndex) {
             return 'playing';
-        } else if (song === hoverSong) {
+        } else if (songIndex === hoverSongIndex) {
             return 'hovering';
         }
         return 'default';
@@ -193,6 +198,10 @@ blocJamsAngular.factory('Player', function () {
 
                 });
             }
+        },
+
+        getSongDuration: function () {
+            return this.currentSoundFile.getDuration();
         },
 
         filterTimeCode: function (timeInSeconds) {

@@ -10,9 +10,9 @@
         </div>
     </section>
     <table class="album-view-song-list" ng-repeat="song in currentAlbum.songs">
-        <tr class="album-view-song-item" ng-mouseover="hoverIn(song)" ng-mouseleave="hoverOut()">
+        <tr class="album-view-song-item" ng-mouseover="hoverIn($index)" ng-mouseleave="hoverOut()">
             <td class="song-item-number">
-                <div ng-switch="getState(song)" ng-click="playPause(song)">
+                <div ng-switch="getState($index)" ng-click="playPause($index)">
                     <div ng-switch-when="hovering" class="ion-play album-song-button"></div>
                     <div ng-switch-when="playing" class="ion-pause album-song-button"></div>
                     <div ng-switch-default>
@@ -52,7 +52,7 @@
                     <div class="thumb"></div>
                 </div>
                 <div class="current-time">{{ currentTime }}</div>
-                <div class="total-time">{{ currentSongInAlbum.length }}</div>
+                <div class="total-time">{{ duration }}</div>
             </div>
             <h2 class="artist-name">{{ currentAlbum.artist }}</h2>
         </div>
