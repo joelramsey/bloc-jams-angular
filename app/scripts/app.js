@@ -23,6 +23,8 @@ blocJamsAngular.config(function ($stateProvider, $locationProvider) {
         });
 });
 
+//Controllers
+
 blocJamsAngular.controller('Landing.controller', ['$scope', function ($scope) {
     $scope.welcome = 'Turn the music up!';
 }]);
@@ -114,6 +116,8 @@ blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function ($s
         $scope.isPlaying = Player.playing;
     };
 }]);
+
+//Services
 
 blocJamsAngular.factory('Player', function () {
     var playButtonTemplate = '<a class="album-song-button"><span class="ion-play"></span></a>';
@@ -218,4 +222,19 @@ blocJamsAngular.factory('Player', function () {
             return formatTime;
         }
     }
+});
+
+//Directives
+
+blocJamsAngular.directive('slider', function () {
+    return {
+        templateUrl: 'templates/slider.html',
+        replace: true,
+        restrict: 'E',
+        scope: {},
+
+        link: function (scope, element, attrs) {
+
+        }
+    };
 });
