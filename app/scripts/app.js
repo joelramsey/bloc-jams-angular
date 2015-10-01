@@ -198,15 +198,40 @@ blocJamsAngular.factory('Player', function () {
         updateSeekBarWhileSongPlays: function () {
 
             if (this.currentSoundFile) {
+                this.currentSoundFile.bind('timeupdate', function (event) {
+                    var seekBarFillRatio = this.getTime() / this.getDuration();
+                    var $seekBar = $('.seek-control .seek-bar');
 
-                this.currentSoundFile.bind('timeupdate', function timeUpdate(event) {
-
+                    this.updateSeekPercentage($seekBar, seekBarFillRatio);
+                    this.setCurrentTimeInPlayerBar(this.getTime());
                 });
             }
         },
 
+        updateSeekPercentage: function (seekBar, seekBarFillRatio) {
+            var offsetXPercent = seekBarFillRatio * 100;
+            offsetXPercent = Math.max(0, offsetXPercent);
+            offsetXPercent = Math.min(100, offsetXPercent);
+
+            var percentageString = offsetXPercent + '%';
+            seekBar.find('.fill').width(percentageString);
+            seekBar.find('.thumb').css({
+                left: percentageString
+            });
+        },
+
         getSongDuration: function () {
             return this.currentSoundFile.getDuration();
+        },
+
+        getCurrentSoundFile: function () {
+            return this.currentSoundFile;
+        },
+
+        setTimePosition: function (time) {
+            if (this.currentSoundFile) {
+                this.currentSoundFile.setTime(time);
+            }
         },
 
         filterTimeCode: function (timeInSeconds) {
@@ -226,15 +251,43 @@ blocJamsAngular.factory('Player', function () {
 
 //Directives
 
-blocJamsAngular.directive('slider', function () {
+blocJamsAngular.directive('slider', ['$document', 'Player', function ($document, Player) {
+
+    function updateSeekPosition(element, event) {
+        var seekBar = element;
+        var offsetX = event.pageX - seekBar.offset().left;
+        var barWidth = seekBar.width();
+        var seekBarFillRatio = offsetX / barWidth;
+
+        if (element.parent().hasClass('seek-control')) {
+            Player.setTimePosition(seekBarFillRatio * Player.getCurrentSoundFile().getDuration());
+        } else if (element.parent().hasClass('volume')) {
+            Player.setVolume(seekBarFillRatio * 100);
+        }
+
+        Player.updateSeekPercentage(seekBar, seekBarFillRatio);
+    }
+
     return {
         templateUrl: 'templates/slider.html',
         replace: true,
         restrict: 'E',
         scope: {},
+        link: function (slider, element, attrs) {
+            slider.onMouseDown = function (event) {
+                $document.bind('mousemove.thumb', function (event) {
+                    updateSeekPosition(element, event);
+                });
 
-        link: function (scope, element, attrs) {
+                $document.bind('mouseup.thumb', function () {
+                    $document.unbind('mousemove.thumb');
+                    $document.unbind('mouseup.thumb');
+                });
+            };
 
+            slider.onClick = function (event) {
+                updateSeekPosition(element, event);
+            };
         }
     };
-});
+}]);
