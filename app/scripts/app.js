@@ -269,7 +269,7 @@ blocJamsAngular.directive('slider', ['$document', 'Player', function ($document,
     }
 
     return {
-        templateUrl: 'templates/slider.html',
+        templateUrl: '/templates/slider.html',
         replace: true,
         restrict: 'E',
         scope: {},
