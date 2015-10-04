@@ -45,6 +45,10 @@ blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function ($s
     $scope.isPlaying = Player.playing;
     $scope.currentSongInAlbum = $scope.currentAlbum.songs[Player.currentSongIndex];
     $scope.duration = null;
+    $scope.$on('newVolume', function (event, data) {
+        Player.setVolume(data);
+    });
+
 
     $scope.playPause = function (songIndex) {
         if (Player.currentSongIndex === songIndex) {
@@ -146,6 +150,7 @@ blocJamsAngular.factory('Player', function () {
                 this.setSong(this.currentSongIndex);
             }
             this.currentSoundFile.play();
+            this.setVolume(this.currentVolume);
 
         },
 
@@ -189,49 +194,25 @@ blocJamsAngular.factory('Player', function () {
                 this.playing = false;
         },
 
-        setVolume: function (volume) {
+        setVolume: function (value) {
             if (this.currentSoundFile) {
-                this.currentSoundFile.setVolume(volume);
+                this.currentSoundFile.setVolume(value);
+                this.volume = value;
             }
         },
 
         updateSeekBarWhileSongPlays: function () {
 
             if (this.currentSoundFile) {
-                this.currentSoundFile.bind('timeupdate', function (event) {
-                    var seekBarFillRatio = this.getTime() / this.getDuration();
-                    var $seekBar = $('.seek-control .seek-bar');
 
-                    this.updateSeekPercentage($seekBar, seekBarFillRatio);
-                    this.setCurrentTimeInPlayerBar(this.getTime());
+                this.currentSoundFile.bind('timeupdate', function timeUpdate(event) {
+
                 });
             }
         },
 
-        updateSeekPercentage: function (seekBar, seekBarFillRatio) {
-            var offsetXPercent = seekBarFillRatio * 100;
-            offsetXPercent = Math.max(0, offsetXPercent);
-            offsetXPercent = Math.min(100, offsetXPercent);
-
-            var percentageString = offsetXPercent + '%';
-            seekBar.find('.fill').width(percentageString);
-            seekBar.find('.thumb').css({
-                left: percentageString
-            });
-        },
-
         getSongDuration: function () {
             return this.currentSoundFile.getDuration();
-        },
-
-        getCurrentSoundFile: function () {
-            return this.currentSoundFile;
-        },
-
-        setTimePosition: function (time) {
-            if (this.currentSoundFile) {
-                this.currentSoundFile.setTime(time);
-            }
         },
 
         filterTimeCode: function (timeInSeconds) {
@@ -251,43 +232,74 @@ blocJamsAngular.factory('Player', function () {
 
 //Directives
 
-blocJamsAngular.directive('slider', ['$document', 'Player', function ($document, Player) {
-
-    function updateSeekPosition(element, event) {
-        var seekBar = element;
-        var offsetX = event.pageX - seekBar.offset().left;
-        var barWidth = seekBar.width();
-        var seekBarFillRatio = offsetX / barWidth;
-
-        if (element.parent().hasClass('seek-control')) {
-            Player.setTimePosition(seekBarFillRatio * Player.getCurrentSoundFile().getDuration());
-        } else if (element.parent().hasClass('volume')) {
-            Player.setVolume(seekBarFillRatio * 100);
-        }
-
-        Player.updateSeekPercentage(seekBar, seekBarFillRatio);
-    }
-
+blocJamsAngular.directive('slider', ['$document', function ($document) {
     return {
-        templateUrl: '/templates/slider.html',
-        replace: true,
         restrict: 'E',
-        scope: {},
-        link: function (slider, element, attrs) {
-            slider.onMouseDown = function (event) {
-                $document.bind('mousemove.thumb', function (event) {
-                    updateSeekPosition(element, event);
-                });
+        replace: true,
+        scope: {
+            vol: '='
+        },
+        templateUrl: '/templates/slider.html',
+        link: function (scope, element, attrs) {
+            scope.value = 0;
 
-                $document.bind('mouseup.thumb', function () {
-                    $document.unbind('mousemove.thumb');
-                    $document.unbind('mouseup.thumb');
+            scope.setThumb = function (value) {
+                $(element).find('.thumb').css({
+                    left: parseInt(value) + '%'
                 });
             };
 
-            slider.onClick = function (event) {
-                updateSeekPosition(element, event);
+            scope.setFill = function (value) {
+                $(element).find('.fill').css({
+                    width: parseInt(value) + '%'
+                });
             };
+
+            scope.setValue = function (newVal) {
+                scope.$apply(scope.value = parseInt(newVal));
+
+                if ($(element).hasClass('volume')) {
+                    scope.$emit('newVolume', scope.value);
+                }
+                if ($(element).hasClass('seeker')) {
+                    scope.$emit('seek', scope.value);
+                }
+            };
+
+            scope.setSeek = function ($slider, ratio) {
+                var offsetPercent = ratio * 100;
+                offsetPercent = Math.max(0, offsetPercent);
+                offsetPercent = Math.min(100, offsetPercent);
+                scope.setThumb(offsetPercent);
+                scope.setFill(offsetPercent);
+                scope.setValue(offsetPercent);
+            };
+
+            $(element).on('click', function (event) {
+                var offset = event.pageX - $(element).offset().left;
+                var barWidth = $(element).width();
+                var ratio = offset / barWidth;
+                scope.setSeek($(element), ratio);
+            });
+
+            scope.seek = function (event) {
+                $(document).bind('mousemove.thumb', function (event) {
+                    var offset = event.pageX - $(element).offset().left;
+                    var barWidth = $(element).width();
+                    var ratio = offset / barWidth;
+                    scope.setSeek($(element), ratio);
+                });
+                $(document).bind('mouseup.thumb', function () {
+                    $(document).unbind('mousemove.thumb');
+                    $(document).unbind('mouseup.thumb');
+                });
+            };
+            scope.$watch('vol', function ($slider) {
+                if ($(element).hasClass('volume')) {
+                    scope.setThumb(scope.vol);
+                    scope.setFill(scope.vol);
+                }
+            });
         }
     };
 }]);

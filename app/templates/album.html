@@ -47,16 +47,17 @@
             <h2 class="song-name">{{ currentSongInAlbum.name }}</h2>
             <h2 class="artist-song-mobile"> {{ currentSongInAlbum.name }} - {{ currentAlbum.artist }}</h2>
             <div class="seek-control">
-
+                <slider class="seeker" prog="prog"></slider>
                 <div class="current-time">{{ currentTime }}</div>
                 <div class="total-time">{{ duration }}</div>
             </div>
             <h2 class="artist-name">{{ currentAlbum.artist }}</h2>
         </div>
         <div class="player-bar-control-group right-controls">
-
-            <span class="ion-volume-high"></span>
-            <slider class="volume"></slider>
+            <div class="volume">
+                <span class="ion-volume-high"></span>
+                <slider class="volume" vol="vol"></slider>
+            </div>
         </div>
     </div>
     </div>
