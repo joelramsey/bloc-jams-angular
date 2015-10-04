@@ -118,7 +118,18 @@ blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function ($s
             $scope.currentSongTime();
         }
         $scope.isPlaying = Player.playing;
+        $scope.$on('song:timeupdate', function (event, data) {
+            $timeout(function () {
+                $scope.currentTimeSecs = data;
+                $scope.currentTime = formatTimeFilter(data);
+            }, 0);
+            $scope.prog = ($scope.currentTimeSecs / $scope.totalTimeSecs) * 100;
+        });
     };
+
+    $scope.$on('seek', function (event, data) {
+        Player.seek(data);
+    });
 }]);
 
 //Services
@@ -212,7 +223,9 @@ blocJamsAngular.factory('Player', function () {
         },
 
         getSongDuration: function () {
-            return this.currentSoundFile.getDuration();
+            if (this.currentSoundFile) {
+                return this.currentSoundFile.getDuration();
+            }
         },
 
         filterTimeCode: function (timeInSeconds) {
@@ -226,6 +239,19 @@ blocJamsAngular.factory('Player', function () {
             }
 
             return formatTime;
+        },
+
+        seek: function (percent) {
+            if (this.currentSoundFile) {
+                var ratio = percent / 100;
+                var newTime = this.currentSoundFile.getDuration() * ratio;
+                this.currentSoundFile.setTime(newTime);
+            }
+        },
+        duration: function () {
+            if (currentSoundFile) {
+                return currentSoundFile.getDuration();
+            }
         }
     }
 });
@@ -237,7 +263,8 @@ blocJamsAngular.directive('slider', ['$document', function ($document) {
         restrict: 'E',
         replace: true,
         scope: {
-            vol: '='
+            vol: '=',
+            prog: '='
         },
         templateUrl: '/templates/slider.html',
         link: function (scope, element, attrs) {
@@ -298,6 +325,12 @@ blocJamsAngular.directive('slider', ['$document', function ($document) {
                 if ($(element).hasClass('volume')) {
                     scope.setThumb(scope.vol);
                     scope.setFill(scope.vol);
+                }
+            });
+            scope.$watch('prog', function ($slider) {
+                if ($(element).hasClass('seeker')) {
+                    scope.setThumb(scope.prog);
+                    scope.setFill(scope.prog);
                 }
             });
         }
