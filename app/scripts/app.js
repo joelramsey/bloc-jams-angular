@@ -39,7 +39,7 @@ blocJamsAngular.controller('Collection.controller', ['$scope', function ($scope)
     $scope.albums = albumsArray;
 }]);
 
-blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function ($scope, Player) {
+blocJamsAngular.controller('Album.controller', ['$scope', 'filteredTimeFilter', 'Player', function ($scope, filteredTimeFilter, Player) {
     $scope.currentAlbum = Player.currentAlbum;
     $scope.currentSoundFile = Player.currentSoundFile;
     $scope.isPlaying = Player.playing;
@@ -77,8 +77,8 @@ blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function ($s
         Player.currentSoundFile.unbind('timeupdate');
         Player.currentSoundFile.bind('timeupdate', function timeUpdate(event) {
             $scope.$apply(function () {
-                $scope.currentTime = Player.currentSoundFile.getTime();
-                $scope.duration = Player.getSongDuration();
+                $scope.currentTime = filteredTimeFilter(Player.currentSoundFile.getTime());
+                $scope.duration = filteredTimeFilter(Player.getSongDuration());
             })
         });
     };
@@ -235,19 +235,6 @@ blocJamsAngular.factory('Player', function () {
             }
         },
 
-        filterTimeCode: function (timeInSeconds) {
-            var time = parseFloat(timeInSeconds);
-            var minutes = Math.floor(time / 60);
-            var seconds = Math.floor(time - minutes * 60);
-            if (seconds >= 10) {
-                var formatTime = minutes + ":" + seconds;
-            } else {
-                var formatTime = minutes + ":0" + seconds;
-            }
-
-            return formatTime;
-        },
-
         seek: function (percent) {
             if (this.currentSoundFile) {
                 var ratio = percent / 100;
@@ -334,4 +321,21 @@ blocJamsAngular.directive('slider', ['$document', function ($document) {
             });
         }
     };
-            }]);
+}]);
+
+//Filter
+
+blocJamsAngular.filter('filteredTime', function () {
+    return function (input) {
+        var time = parseFloat(input);
+        var minutes = Math.floor(input / 60);
+        var seconds = Math.floor(input - minutes * 60);
+        if (seconds >= 10) {
+            var input = minutes + ":" + seconds;
+        } else {
+            var input = minutes + ":0" + seconds;
+        }
+
+        return input;
+    };
+});
