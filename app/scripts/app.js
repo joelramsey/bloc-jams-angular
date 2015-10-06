@@ -45,8 +45,15 @@ blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function ($s
     $scope.isPlaying = Player.playing;
     $scope.currentSongInAlbum = $scope.currentAlbum.songs[Player.currentSongIndex];
     $scope.duration = null;
-    $scope.$on('newVolume', function (event, data) {
-        Player.setVolume(data);
+    $scope.prog = 0;
+    $scope.vol = Player.currentVolume;
+    window.scope = $scope;
+    $scope.$on('newValue', function (event, data) {
+        if (data.element.attr('bound-value') === 'prog') {
+            Player.seek(data.value);
+        } else if (data.element.attr('bound-value') === 'vol') {
+            Player.setVolume(data.value);
+        }
     });
 
 
@@ -127,9 +134,9 @@ blocJamsAngular.controller('Album.controller', ['$scope', 'Player', function ($s
         });
     };
 
-    $scope.$on('seek', function (event, data) {
-        Player.seek(data);
-    });
+
+
+
 }]);
 
 //Services
@@ -263,8 +270,7 @@ blocJamsAngular.directive('slider', ['$document', function ($document) {
         restrict: 'E',
         replace: true,
         scope: {
-            vol: '=',
-            prog: '='
+            boundValue: '='
         },
         templateUrl: '/templates/slider.html',
         link: function (scope, element, attrs) {
@@ -283,17 +289,14 @@ blocJamsAngular.directive('slider', ['$document', function ($document) {
             };
 
             scope.setValue = function (newVal) {
-                scope.$apply(scope.value = parseInt(newVal));
-
-                if ($(element).hasClass('volume')) {
-                    scope.$emit('newVolume', scope.value);
-                }
-                if ($(element).hasClass('seeker')) {
-                    scope.$emit('seek', scope.value);
-                }
+                scope.value = parseInt(newVal);
+                scope.$emit('newValue', {
+                    value: scope.value,
+                    element: element
+                });
             };
 
-            scope.setSeek = function ($slider, ratio) {
+            scope.setSeek = function (ratio) {
                 var offsetPercent = ratio * 100;
                 offsetPercent = Math.max(0, offsetPercent);
                 offsetPercent = Math.min(100, offsetPercent);
@@ -302,11 +305,13 @@ blocJamsAngular.directive('slider', ['$document', function ($document) {
                 scope.setValue(offsetPercent);
             };
 
+            scope.setSeek(scope.boundValue / 100);
+
             $(element).on('click', function (event) {
                 var offset = event.pageX - $(element).offset().left;
                 var barWidth = $(element).width();
                 var ratio = offset / barWidth;
-                scope.setSeek($(element), ratio);
+                scope.setSeek(ratio);
             });
 
             scope.seek = function (event) {
@@ -314,25 +319,19 @@ blocJamsAngular.directive('slider', ['$document', function ($document) {
                     var offset = event.pageX - $(element).offset().left;
                     var barWidth = $(element).width();
                     var ratio = offset / barWidth;
-                    scope.setSeek($(element), ratio);
+                    scope.setSeek(ratio);
                 });
                 $(document).bind('mouseup.thumb', function () {
                     $(document).unbind('mousemove.thumb');
                     $(document).unbind('mouseup.thumb');
                 });
             };
-            scope.$watch('vol', function ($slider) {
-                if ($(element).hasClass('volume')) {
-                    scope.setThumb(scope.vol);
-                    scope.setFill(scope.vol);
-                }
-            });
-            scope.$watch('prog', function ($slider) {
-                if ($(element).hasClass('seeker')) {
-                    scope.setThumb(scope.prog);
-                    scope.setFill(scope.prog);
-                }
+
+            scope.$watch('boundValue', function ($slider) {
+                scope.setThumb(scope.boundValue);
+                scope.setFill(scope.boundValue);
+
             });
         }
     };
-}]);
+            }]);
